@@ -6,7 +6,7 @@
 
 // Data
 const account1 = {
-  owner: 'Jonas Schmedtmann',
+  owner: 'James Smith',
   movements: [
     200, 450, -400, 3000, -650, -130, 70, 1300, 800, -1200, 600, -300, 450,
     -700, 1000, -250,
@@ -32,7 +32,7 @@ const account1 = {
     '2023-11-03T17:15:45.123Z',
   ],
   locale: 'pt-PT',
-  currency: "EUR"
+  currency: 'EUR',
 };
 
 const account2 = {
@@ -51,7 +51,7 @@ const account2 = {
     '2023-03-22T14:45:00.000Z',
   ],
   locale: 'en-GB',
-  currency: "GBP"
+  currency: 'GBP',
 };
 
 const account3 = {
@@ -70,7 +70,7 @@ const account3 = {
     '2023-03-22T14:45:00.000Z',
   ],
   locale: 'ja-JP',
-  currency: "JPY"
+  currency: 'JPY',
 };
 
 const account4 = {
@@ -89,7 +89,7 @@ const account4 = {
     '2023-03-22T14:45:00.000Z',
   ],
   locale: 'pt-PT',
-  currency: "EUR"
+  currency: 'EUR',
 };
 
 let accounts = [account1, account2, account3, account4];
@@ -118,7 +118,7 @@ const btnLoan = document.querySelector('.form__btn--loan');
 const btnClose = document.querySelector('.form__btn--close');
 const btnSort = document.querySelector('.btn--sort');
 const changeUser = document.querySelector('.change_user');
-let loanMessage = document.querySelector(".loan_message")
+let loanMessage = document.querySelector('.loan_message');
 
 const inputLoginUsername = document.querySelector('.login__input--user');
 const inputLoginPin = document.querySelector('.login__input--pin');
@@ -201,7 +201,7 @@ const createAccount = function () {
       movements: [100],
       pin: +inputNewUserPin.value,
       locale: 'en-GB',
-      currency: "GBP"
+      currency: 'GBP',
     };
 
     // Add the new account to the accounts array
@@ -250,18 +250,12 @@ const formatMovementDate = function (date, locale) {
   }
 };
 
-
-const formatCur = function (value, locale, currency){
-
-
-return new Intl.NumberFormat(locale, {
-  style: 'currency',
-  currency: currency,
-}).format(value)
-
-}
-
-
+const formatCur = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value);
+};
 
 const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
@@ -277,10 +271,7 @@ const displayMovements = function (acc, sort = false) {
 
     const displayDate = formatMovementDate(date, acc.locale);
 
-const formattedMov = formatCur(mov, acc.locale, acc.currency)
-
-
-    
+    const formattedMov = formatCur(mov, acc.locale, acc.currency);
 
     const html = `<div class="movements__row">
       <div class="movements__type movements__type--${type}">${type}</div>
@@ -314,26 +305,26 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = formatCur(acc.balance, acc.locale, acc.currency)
+  labelBalance.textContent = formatCur(acc.balance, acc.locale, acc.currency);
 };
 
 const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = formatCur(incomes, acc.locale, acc.currency)
+  labelSumIn.textContent = formatCur(incomes, acc.locale, acc.currency);
 
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = formatCur(out, acc.locale, acc.currency)
+  labelSumOut.textContent = formatCur(out, acc.locale, acc.currency);
 
   const interest = acc.movements
     .filter(mov => mov > 0)
     .map(deposit => (deposit * acc.interestRate) / 100)
     .filter(int => int >= 1)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency)
+  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);
 };
 
 const createUsernames = function (accs) {
@@ -456,14 +447,13 @@ btnLogin.addEventListener('click', function (e) {
     error.style.paddingTop = 2 + 'rem';
   }
 
-  setInterval(function(){
+  setInterval(function () {
     const now = new Date();
     labelDate.textContent = new Intl.DateTimeFormat(
       currentAccount.locale,
       options
     ).format(now);
-  }, 1000)
-
+  }, 1000);
 
   const options = {
     day: 'numeric',
@@ -471,10 +461,9 @@ btnLogin.addEventListener('click', function (e) {
     year: 'numeric',
     hour: 'numeric',
     minute: 'numeric',
-    second: "numeric"
+    second: 'numeric',
     // weekday: "long",
   };
-
 });
 
 btnTransfer.addEventListener('click', function (e) {
@@ -508,30 +497,27 @@ btnLoan.addEventListener('click', function (e) {
 
   const amount = Math.floor(inputLoanAmount.value);
 
-
-  loanMessage.textContent = "Requesting..."
+  loanMessage.textContent = 'Requesting...';
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    setTimeout(function(){
+    setTimeout(function () {
+      currentAccount.movements.push(amount);
 
+      console.log(new Date());
 
-    currentAccount.movements.push(amount);
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    console.log(new Date());
+      updateUI(currentAccount);
+      loanMessage.textContent = 'Request Granted';
 
-    currentAccount.movementsDates.push(new Date().toISOString());
+      setTimeout(function () {
+        loanMessage.textContent = '';
+      }, 5000);
+    }, 2500);
 
-    updateUI(currentAccount);
-    loanMessage.textContent = "Request Granted"
-
-setTimeout(function(){
-  loanMessage.textContent = ""
-}, 5000)
-
-  }, 2500)
-
-  inputLoanAmount.value = '';
-}});
+    inputLoanAmount.value = '';
+  }
+});
 
 btnClose.addEventListener('click', function (e) {
   e.preventDefault();
@@ -550,4 +536,3 @@ btnClose.addEventListener('click', function (e) {
 
   inputCloseUsername.value = inputClosePin.value = '';
 });
-
